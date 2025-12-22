@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/schemas/form-builder.json",
+    "title": "Dynamic Form Schema",
+    "description": "Schema for defining arbitrary form layouts and validation logic.",
+    "type": "object",
+    "required": ["formId", "title", "fields"],
+    "properties": {
+      "formId": {
+        "type": "string",
+        "description": "Unique identifier for the form version"
+      },
+      "title": {
+        "type": "string",
+        "description": "The public title of the form"
+      },
+      "description": {
+        "type": "string"
+      },
+      "submitLabel": {
+        "type": "string",
+        "default": "Submit"
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/formField"
+        }
+      }
+    },
+    "definitions": {
+      "formField": {
+        "type": "object",
+        "required": ["id", "type", "label"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "description": "Unique key for the data payload"
+          },
+          "label": {
+            "type": "string"
+          },
+          "helpText": {
+            "type": "string",
+            "description": "Small text to assist the user"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "hidden": {
+            "type": "boolean",
+            "default": false
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text", "textarea", "number", "radio", "checkbox", "slider", "file"]
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "type": { "const": "text" } } },
+            "then": { "$ref": "#/definitions/textField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "textarea" } } },
+            "then": { "$ref": "#/definitions/textField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "number" } } },
+            "then": { "$ref": "#/definitions/numberField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "radio" } } },
+            "then": { "$ref": "#/definitions/optionsField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "checkbox" } } },
+            "then": { "$ref": "#/definitions/optionsField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "slider" } } },
+            "then": { "$ref": "#/definitions/sliderField" }
+          },
+          {
+            "if": { "properties": { "type": { "const": "file" } } },
+            "then": { "$ref": "#/definitions/fileField" }
+          }
+        ]
+      },
+      "textField": {
+        "properties": {
+          "placeholder": { "type": "string" },
+          "minLength": { "type": "integer", "minimum": 0 },
+          "maxLength": { "type": "integer" },
+          "pattern": { "type": "string", "description": "Regex for validation" },
+          "inputType": { 
+              "type": "string", 
+              "enum": ["text", "email", "password", "tel", "url"],
+              "default": "text"
+          }
+        }
+      },
+      "numberField": {
+        "properties": {
+          "min": { "type": "number" },
+          "max": { "type": "number" }
+        }
+      },
+      "sliderField": {
+        "required": ["min", "max"],
+        "properties": {
+          "min": { "type": "number" },
+          "max": { "type": "number" },
+          "step": { "type": "number", "default": 1 },
+          "showTicks": { "type": "boolean", "default": false }
+        }
+      },
+      "optionsField": {
+        "required": ["options"],
+        "properties": {
+          "layout": { "type": "string", "enum": ["vertical", "horizontal", "dropdown"], "default": "vertical" },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["label", "value"],
+              "properties": {
+                "label": { "type": "string" },
+                "value": { "type": ["string", "number", "boolean"] }
+              }
+            }
+          }
+        }
+      },
+      "fileField": {
+        "properties": {
+          "accept": { "type": "string", "description": "MIME types, e.g. 'image/png, .pdf'" },
+          "maxSizeMB": { "type": "number" },
+          "multiple": { "type": "boolean", "default": false }
+        }
+      }
+    }
+  }

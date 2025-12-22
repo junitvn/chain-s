@@ -1,0 +1,476 @@
+# Figma to React Native/Expo Code Generation Rules
+
+## Overview
+When generating code from Figma designs using Figma MCP, follow these guidelines to ensure consistency with the React Native/Expo project structure.
+
+## Component Generation
+
+### Base Components
+- Use React Native core components: `View`, `Text`, `Image`, `TouchableOpacity`, `ScrollView`, `SafeAreaView`
+- Use Expo components when available: `expo-image` for images, `expo-symbols` for system symbols
+- Follow the existing component structure in `/components` directory
+- Use TypeScript for all components with proper type definitions
+- Use `StyleSheet.create()` for component styles
+
+### Component Structure Template
+```typescript
+import { StyleSheet, View, Text } from 'react-native';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { Colors } from '@/constants/theme';
+
+interface ComponentProps {
+  // Define props
+}
+
+export function ComponentName({ ...props }: ComponentProps) {
+  const backgroundColor = useThemeColor({}, 'background');
+  
+  return (
+    <View style={styles.container}>
+      {/* Component content */}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    // styles
+  },
+});
+```
+
+## Icon Handling
+
+### SVG Icons from Figma
+- Convert Figma vector icons to React Native SVG using `react-native-svg`
+- Create icon components with customizable `width` and `height` props
+- Default size should be 24x24 if not specified
+- Store icon components in `/components/icons/` directory
+- Use `viewBox` to maintain aspect ratio
+
+### Icon Component Template
+```typescript
+import * as React from 'react';
+import Svg, { Path, Circle, Rect } from 'react-native-svg';
+
+interface IconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+export function IconName({ 
+  width = 24, 
+  height = 24, 
+  color = '#000000' 
+}: IconProps) {
+  return (
+    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+      {/* SVG paths from Figma */}
+    </Svg>
+  );
+}
+```
+
+### When to Use Icons
+- Navigation icons
+- UI action buttons (close, menu, search, etc.)
+- Status indicators
+- Decorative vector graphics smaller than 100x100
+
+## Image Handling
+
+### Raster Images from Figma
+- Download all raster images (PNG, JPG) to `/assets/mcp_images/` directory
+- Use descriptive, kebab-case filenames (e.g., `hero-banner.png`, `product-thumbnail.jpg`)
+- Include @2x and @3x versions for high-resolution displays when available
+- Use `expo-image` for optimized image loading
+
+### Image Component Usage
+```typescript
+import { Image } from 'expo-image';
+
+<Image
+  source={require('@/assets/mcp_images/image-name.png')}
+  style={{ width: 200, height: 150 }}
+  contentFit="cover"
+  transition={200}
+/>
+```
+
+### Image Organization
+- `/assets/mcp_images/` - All Figma-downloaded images
+- Use subdirectories for organization: `mcp_images/screens/`, `mcp_images/components/`, etc.
+- Keep original Figma node IDs in comments for reference
+
+## Color Palette & Theme Generation
+
+### Extracting Colors from Figma
+When importing a Figma design, extract all color values and update `/constants/theme.ts`:
+
+1. **Identify Color Roles**: Primary, secondary, accent, background, surface, text, borders, etc.
+2. **Support Light/Dark Modes**: Create both light and dark variants
+3. **Use Direct Hex Values**: Store colors as hex strings (e.g., '#7F0000'), not HSL or CSS variables
+4. **Organize by Purpose**: Group colors semantically (e.g., brand, ui, semantic)
+
+### Theme File Structure
+```typescript
+// /constants/theme.ts
+import { Platform } from 'react-native';
+
+// Brand Colors (from Figma)
+export const BrandColors = {
+  primary: '#YOUR_PRIMARY_COLOR',
+  primaryDark: '#YOUR_PRIMARY_DARK',
+  secondary: '#YOUR_SECONDARY_COLOR',
+  accent: '#YOUR_ACCENT_COLOR',
+};
+
+// Semantic Colors
+export const SemanticColors = {
+  success: '#YOUR_SUCCESS_COLOR',
+  warning: '#YOUR_WARNING_COLOR',
+  error: '#YOUR_ERROR_COLOR',
+  info: '#YOUR_INFO_COLOR',
+};
+
+// Theme Colors (Light/Dark Mode)
+export const Colors = {
+  light: {
+    text: '#11181C',
+    textSecondary: '#687076',
+    background: '#FFFFFF',
+    surface: '#F5F5F5',
+    border: '#E0E0E0',
+    tint: BrandColors.primary,
+    icon: '#687076',
+    tabIconDefault: '#687076',
+    tabIconSelected: BrandColors.primary,
+    ...BrandColors,
+  },
+  dark: {
+    text: '#ECEDEE',
+    textSecondary: '#9BA1A6',
+    background: '#151718',
+    surface: '#1E1E1E',
+    border: '#2A2A2A',
+    tint: BrandColors.primaryDark,
+    icon: '#9BA1A6',
+    tabIconDefault: '#9BA1A6',
+    tabIconSelected: BrandColors.primaryDark,
+    ...BrandColors,
+  },
+};
+
+// Typography (from Figma)
+export const Typography = {
+  sizes: {
+    xs: 12,
+    sm: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36,
+  },
+  weights: {
+    normal: '400' as const,
+    medium: '500' as const,
+    semibold: '600' as const,
+    bold: '700' as const,
+    extrabold: '800' as const,
+  },
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.75,
+  },
+};
+
+// Spacing (from Figma)
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  '2xl': 48,
+  '3xl': 64,
+};
+
+// Border Radius (from Figma)
+export const BorderRadius = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  full: 9999,
+};
+
+// Shadows
+export const Shadows = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+};
+
+// Fonts
+export const Fonts = Platform.select({
+  ios: {
+    sans: 'system-ui',
+    serif: 'ui-serif',
+    rounded: 'ui-rounded',
+    mono: 'ui-monospace',
+  },
+  default: {
+    sans: 'normal',
+    serif: 'serif',
+    rounded: 'normal',
+    mono: 'monospace',
+  },
+  web: {
+    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    serif: "Georgia, 'Times New Roman', serif",
+    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+  },
+});
+```
+
+## Figma MCP Workflow
+
+### Step 1: Fetch Figma Data
+```typescript
+// Use Figma MCP tool to fetch design data
+mcp_Framelink_Figma_MCP_get_figma_data({
+  fileKey: "YOUR_FIGMA_FILE_KEY",
+  nodeId: "YOUR_NODE_ID" // Optional, for specific nodes
+})
+```
+
+### Step 2: Extract Colors
+- Identify all fill colors, stroke colors, and effect colors
+- Map Figma color names to semantic theme names
+- Update `/constants/theme.ts` with extracted colors
+- Document color usage in comments
+
+### Step 3: Download Images
+```typescript
+// Use Figma MCP tool to download images
+mcp_Framelink_Figma_MCP_download_figma_images({
+  fileKey: "YOUR_FIGMA_FILE_KEY",
+  localPath: "/Users/lamnguyen/code/ChainS/assets/mcp_images",
+  nodes: [
+    {
+      nodeId: "123:456",
+      fileName: "hero-image.png",
+      imageRef: "..." // For raster images
+    }
+  ],
+  pngScale: 2 // For retina displays
+})
+```
+
+### Step 4: Convert Icons to SVG
+- Extract vector paths from Figma
+- Create React Native SVG components in `/components/icons/`
+- Add width, height, and color props
+- Test on iOS and Android
+
+### Step 5: Generate Components
+- Create components matching Figma frames/components
+- Use theme colors from `/constants/theme.ts`
+- Apply responsive sizing using Dimensions or flexbox
+- Add TypeScript types for props
+- Include accessibility props (accessibilityLabel, accessibilityRole)
+
+## Best Practices
+
+### Naming Conventions
+- Components: PascalCase (e.g., `UserProfileCard`)
+- Files: kebab-case (e.g., `user-profile-card.tsx`)
+- Icons: PascalCase with "Icon" suffix (e.g., `SearchIcon`)
+- Images: kebab-case (e.g., `hero-banner.png`)
+
+### Component Organization
+```
+/components
+  /icons          - SVG icon components from Figma
+  /ui             - Reusable UI components
+  /screens        - Screen-specific components
+  /<feature>      - Feature-specific components
+```
+
+### Styling Guidelines
+- Use StyleSheet.create() for performance
+- Reference theme colors: `Colors.light.primary` or `useThemeColor()`
+- Use relative units (percentages, flex) over fixed dimensions when possible
+- Support both light and dark modes
+- Test on multiple screen sizes
+
+### Accessibility
+- Add meaningful accessibilityLabel to all interactive elements
+- Use accessibilityRole for semantic meaning
+- Ensure touch targets are at least 44x44 points
+- Support dynamic type sizing
+- Test with screen readers (VoiceOver, TalkBack)
+
+### Performance
+- Use Image caching with expo-image
+- Optimize SVG viewBox and remove unnecessary paths
+- Use memo() for complex components
+- Lazy load heavy components with React.lazy() and Suspense
+
+## Figma Node Type Mapping
+
+| Figma Node Type | React Native Component |
+|----------------|------------------------|
+| FRAME          | View                   |
+| TEXT           | Text                   |
+| RECTANGLE      | View (with backgroundColor/borderRadius) |
+| ELLIPSE        | View (with borderRadius) or SVG Circle |
+| VECTOR         | SVG Component          |
+| INSTANCE       | Custom Component       |
+| IMAGE          | Image (expo-image)     |
+| GROUP          | View (flexbox)         |
+
+## Example: Complete Workflow
+
+```typescript
+// 1. Fetch Figma design
+const figmaData = await mcp_Framelink_Figma_MCP_get_figma_data({
+  fileKey: "abc123",
+  nodeId: "1234:5678"
+});
+
+// 2. Extract and save colors to theme.ts
+export const BrandColors = {
+  primary: '#6366F1',    // From Figma "Primary" style
+  secondary: '#8B5CF6',  // From Figma "Secondary" style
+  accent: '#EC4899',     // From Figma "Accent" style
+};
+
+// 3. Download images
+await mcp_Framelink_Figma_MCP_download_figma_images({
+  fileKey: "abc123",
+  localPath: "/Users/lamnguyen/code/ChainS/assets/mcp_images",
+  nodes: [
+    {
+      nodeId: "1234:5678",
+      fileName: "splash-background.png",
+      imageRef: "imageRef123"
+    }
+  ],
+  pngScale: 2
+});
+
+// 4. Create icon component
+// /components/icons/menu-icon.tsx
+import Svg, { Path } from 'react-native-svg';
+
+interface MenuIconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+export function MenuIcon({ width = 24, height = 24, color = '#000' }: MenuIconProps) {
+  return (
+    <Svg width={width} height={height} viewBox="0 0 24 24">
+      <Path d="M3 12h18M3 6h18M3 18h18" stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
+// 5. Create screen component
+// /app/(tabs)/profile.tsx
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { MenuIcon } from '@/components/icons/menu-icon';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
+export default function ProfileScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <MenuIcon width={32} height={32} color={colors.icon} />
+      <Image
+        source={require('@/assets/mcp_images/splash-background.png')}
+        style={styles.heroImage}
+        contentFit="cover"
+      />
+      <Text style={[styles.title, { color: colors.text }]}>
+        Profile
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  heroImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 16,
+  },
+});
+```
+
+## Required Dependencies
+
+Ensure these packages are installed for Figma to React Native conversion:
+
+```json
+{
+  "dependencies": {
+    "react-native-svg": "^15.0.0",
+    "expo-image": "~3.0.11"
+  }
+}
+```
+
+## Summary Checklist
+
+When generating code from Figma:
+- [ ] Extract all colors and update `/constants/theme.ts`
+- [ ] Download raster images to `/assets/mcp_images/`
+- [ ] Convert vector icons to SVG components in `/components/icons/`
+- [ ] Create reusable components with TypeScript types
+- [ ] Use theme colors via `useThemeColor()` hook
+- [ ] Support light/dark mode
+- [ ] Add proper accessibility labels
+- [ ] Test on iOS and Android
+- [ ] Use StyleSheet.create() for styles
+- [ ] Follow existing project structure and naming conventions
+
