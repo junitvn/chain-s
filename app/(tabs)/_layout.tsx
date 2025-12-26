@@ -1,35 +1,62 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { router, Tabs } from 'expo-router';
+import React, { useRef } from 'react';
+import { View } from 'react-native';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ActionBottomSheet } from '@/components/action-bottom-sheet';
+import { CustomTabBar } from '@/components/custom-tab-bar';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const handleCheckStore = () => {
+    router.push('/select-store');
+  };
+
+  const handleReportIssue = () => {
+    console.log('Report issue pressed');
+    // TODO: Navigate to report issue screen
+  };
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
+    <View style={{ flex: 1 }}>
+      <Tabs
+        tabBar={(props) => <CustomTabBar {...props} bottomSheetRef={bottomSheetRef} />}
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Dashboard',
+          }}
+        />
+        <Tabs.Screen
+          name="tickets"
+          options={{
+            title: 'Quản lý',
+          }}
+        />
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            title: 'Chat',
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Cá nhân',
+          }}
+        />
+      </Tabs>
+
+      {/* Bottom Sheet at full page level */}
+      <ActionBottomSheet
+        ref={bottomSheetRef}
+        onCheckStore={handleCheckStore}
+        onReportIssue={handleReportIssue}
       />
-      <Tabs.Screen
-        name="tickets"
-        options={{
-          title: 'Tickets',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="ticket.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+    </View>
   );
 }

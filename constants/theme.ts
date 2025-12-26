@@ -59,6 +59,10 @@ export const NeutralColors = {
   gray800: '#1F2937',
   gray900: '#171717',      // From Figma: Text/text.900
   gray950: '#030712',
+  // Muted colors from Figma
+  muted400: '#A3A3A3',     // From Figma: Muted/muted.400 (tab bar inactive)
+  // Border colors from Figma
+  borderGray: '#D8DEE9',   // From Figma: Tab bar border
 };
 
 /**
@@ -74,45 +78,46 @@ export const Colors = {
     textSecondary: '#687076',
     textTertiary: '#9CA3AF',
     textInverse: '#FFFFFF',
-    
+    text50: '#FAFAFA',        // From Figma: Text/text.50 (light text on dark bg)
+
     // Background colors
     background: '#FFFFFF',
     backgroundSecondary: '#F5F5F5',
     backgroundTertiary: '#FAFAFA',
     surface: '#FFFFFF',
     surfaceElevated: '#FFFFFF',
-    
+
     // Border colors
     border: '#E0E0E0',
     borderLight: '#F0F0F0',
     borderDark: '#D0D0D0',
-    
+
     // UI colors
     tint: tintColorLight,
     icon: '#687076',
     iconSecondary: '#9CA3AF',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
-    
+
     // Brand colors
     primary: BrandColors.primary,
     primaryDark: BrandColors.primaryDark,
     primaryLight: BrandColors.primaryLight,
     secondary: BrandColors.secondary,
     accent: BrandColors.accent,
-    
+
     // Semantic colors
     success: SemanticColors.success,
     warning: SemanticColors.warning,
     error: SemanticColors.error,
     info: SemanticColors.info,
-    
+
     // Interactive states
     hover: 'rgba(0, 0, 0, 0.05)',
     pressed: 'rgba(0, 0, 0, 0.1)',
     disabled: '#E0E0E0',
     disabledText: '#9CA3AF',
-    
+
     // Overlay colors
     overlay: 'rgba(0, 0, 0, 0.5)',
     backdrop: 'rgba(0, 0, 0, 0.3)',
@@ -123,45 +128,47 @@ export const Colors = {
     textSecondary: '#9BA1A6',
     textTertiary: '#6B7280',
     textInverse: '#11181C',
-    
+    text50: '#FAFAFA',        // From Figma: Text/text.50 (light text on dark bg)
+
     // Background colors
     background: '#151718',
     backgroundSecondary: '#1E1E1E',
     backgroundTertiary: '#252525',
     surface: '#1E1E1E',
     surfaceElevated: '#2A2A2A',
-    
+
     // Border colors
     border: '#2A2A2A',
     borderLight: '#353535',
     borderDark: '#1F1F1F',
-    
+
     // UI colors
     tint: tintColorDark,
     icon: '#9BA1A6',
     iconSecondary: '#6B7280',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
-    
+
     // Brand colors (adjusted for dark mode)
     primary: BrandColors.primaryLight,
     primaryDark: BrandColors.primary,
     primaryLight: '#5DB3CC',
     secondary: BrandColors.secondaryLight,
     accent: BrandColors.accentLight,
-    
+
     // Semantic colors (adjusted for dark mode)
     success: SemanticColors.successLight,
     warning: SemanticColors.warningLight,
+    warning50: SemanticColors.warning50,
     error: SemanticColors.errorLight,
     info: SemanticColors.infoLight,
-    
+
     // Interactive states
     hover: 'rgba(255, 255, 255, 0.05)',
     pressed: 'rgba(255, 255, 255, 0.1)',
     disabled: '#2A2A2A',
     disabledText: '#6B7280',
-    
+
     // Overlay colors
     overlay: 'rgba(0, 0, 0, 0.7)',
     backdrop: 'rgba(0, 0, 0, 0.5)',
