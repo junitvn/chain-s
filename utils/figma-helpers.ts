@@ -341,3 +341,5 @@ export function hasGoodContrast(textColor: string, backgroundColor: string): boo
   return ratio >= 4.5; // WCAG AA standard for normal text
 }
 
+
+

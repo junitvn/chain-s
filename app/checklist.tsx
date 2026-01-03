@@ -1,11 +1,15 @@
 import { CustomHeader } from "@/components/custom-header";
+import { Collapsible } from "@/components/ui/collapsible";
+import { Gap } from "@/components/ui/gap";
 import { BorderRadius, Colors, SemanticColors, Shadows, Spacing, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Checklist() {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const [generalNote, setGeneralNote] = useState('');
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -44,6 +48,30 @@ export default function Checklist() {
                         </Text>
                     </View>
                 </View>
+                <Gap size={Spacing.md} />
+                {/* General notes */}
+                <View>
+                    <Collapsible title="Ghi chú chung">
+                        <TextInput
+                            style={[
+                                styles.textArea,
+                                {
+                                    backgroundColor: colors.background,
+                                    color: colors.text,
+                                    borderColor: colors.border,
+                                }
+                            ]}
+                            value={generalNote}
+                            onChangeText={setGeneralNote}
+                            placeholder={`Ví dụ: "Cần chú trọng khu vực ngoài trời và nhà vệ sinh."`}
+                            placeholderTextColor={colors.textSecondary}
+                            multiline
+                            maxLength={500}
+                            numberOfLines={6}
+                            textAlignVertical="top"
+                        />
+                    </Collapsible>
+                </View>
             </View>
         </View>
     );
@@ -75,5 +103,13 @@ const styles = StyleSheet.create({
     divider: {
         height: 1,
         marginVertical: Spacing.xs,
+    },
+    textArea: {
+        borderRadius: BorderRadius.md,
+        borderWidth: 1,
+        padding: Spacing.md,
+        fontSize: Typography.sizes.base,
+        fontWeight: Typography.weights.normal,
+        minHeight: 120,
     },
 });       
