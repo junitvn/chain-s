@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -19,21 +21,40 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [focusedInput, setFocusedInput] = useState<'username' | 'password' | null>(null);
+  const [focusedInput, setFocusedInput] = useState<'email' | 'password' | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Navigate to home (tabs)
-    router.replace('/(tabs)');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Lỗi', 'Vui lòng nhập email và mật khẩu');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+      // Navigate to home (tabs) on successful login
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert(
+        'Đăng nhập thất bại',
+        error instanceof Error ? error.message : 'Có lỗi xảy ra. Vui lòng thử lại.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
     // Handle forgot password action
-    console.log('Forgot password pressed');
+    Alert.alert('Quên mật khẩu', 'Chức năng này đang được phát triển');
   };
 
   return (
@@ -59,34 +80,36 @@ export default function LoginScreen() {
 
           {/* Form Section */}
           <View style={[styles.formContainer, { backgroundColor: '#FFFFFF' }]}>
-            {/* Username Input */}
+            {/* Email Input */}
             <View style={styles.inputGroup}>
               <Text style={[styles.inputLabel, { color: NeutralColors.gray700 }]}>
-                Tên đăng nhập
+                Email
               </Text>
               <View
                 style={[
                   styles.inputWrapper,
                   {
                     borderColor:
-                      focusedInput === 'username'
+                      focusedInput === 'email'
                         ? BrandColors.primary
                         : NeutralColors.gray300,
                     backgroundColor: '#FFFFFF',
                   },
-                  focusedInput === 'username' && styles.inputWrapperFocused,
+                  focusedInput === 'email' && styles.inputWrapperFocused,
                 ]}
               >
                 <TextInput
                   style={[styles.input, { color: NeutralColors.gray900 }]}
-                  placeholder="Nhập tên đăng nhập"
+                  placeholder="Nhập địa chỉ email"
                   placeholderTextColor={NeutralColors.gray400}
-                  value={username}
-                  onChangeText={setUsername}
-                  onFocus={() => setFocusedInput('username')}
+                  value={email}
+                  onChangeText={setEmail}
+                  onFocus={() => setFocusedInput('email')}
                   onBlur={() => setFocusedInput(null)}
                   autoCapitalize="none"
                   autoCorrect={false}
+                  keyboardType="email-address"
+                  editable={!isLoading}
                 />
               </View>
             </View>
@@ -120,6 +143,7 @@ export default function LoginScreen() {
                   secureTextEntry
                   autoCapitalize="none"
                   autoCorrect={false}
+                  editable={!isLoading}
                 />
               </View>
             </View>
@@ -140,11 +164,15 @@ export default function LoginScreen() {
               style={[
                 styles.loginButton,
                 { backgroundColor: BrandColors.headerOverlay },
-                !username || !password ? styles.loginButtonDisabled : null,
+                (!email || !password || isLoading) && styles.loginButtonDisabled,
               ]}
-              disabled={!username || !password}
+              disabled={!email || !password || isLoading}
             >
-              <Text style={styles.loginButtonText}>Đăng nhập</Text>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.loginButtonText}>Đăng nhập</Text>
+              )}
             </TouchableOpacity>
 
             {/* Footer Text */}
