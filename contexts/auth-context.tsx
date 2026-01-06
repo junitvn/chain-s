@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { authClient, type Session } from '@/lib/auth';
+import { authClient } from '@/lib/auth-client';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
-  session: Session | null;
+  session: any | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -11,7 +11,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

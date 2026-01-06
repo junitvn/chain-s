@@ -4,6 +4,8 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
+config.resolver.unstable_enablePackageExports = true; 
+
 // Add better-auth resolver configuration
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'better-auth') {
