@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -10,18 +11,17 @@ import Animated, {
 
 import { ThemedView } from '@/components/themed-view';
 import { TicketComponent } from '@/components/ticket-component';
+import FEATURE_FLAGS from '@/constants/flag';
 import { BorderRadius, BrandColors, NeutralColors, SemanticColors, Shadows, Spacing, Typography } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useAuthStore } from '@/stores/auth-store';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HEADER_HEIGHT = 250;
 
 export default function HomeScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
+  const { session } = useAuthStore();
+  console.log("🚀 ~ HomeScreen ~ session:", session)
 
   // Parallax animation for header (with scale)
   const headerAnimatedStyle = useAnimatedStyle(() => {
@@ -94,49 +94,51 @@ export default function HomeScreen() {
           pointerEvents="none"
         >
           <Text style={styles.greetingText}>Xin chào</Text>
-          <Text style={styles.userName}>Diệp Anh</Text>
+          <Text style={styles.userName}>{session?.user.name}</Text>
         </Animated.View>
 
         {/* Content Body */}
         <ThemedView style={styles.content}>
           {/* Section 1: Vấn đề chờ xử lý */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
-                Vấn đề chờ xử lý
-              </Text>
-              <TouchableOpacity>
-                <Text style={[styles.viewAllText, { color: NeutralColors.gray900 }]}>
-                  View all
+          {FEATURE_FLAGS.ENABLE_TICKETS && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
+                  Vấn đề chờ xử lý
                 </Text>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity>
+                  <Text style={[styles.viewAllText, { color: NeutralColors.gray900 }]}>
+                    View all
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            {/* Ticket List */}
-            <View style={styles.ticketList}>
-              <TicketComponent
-                location="Sắn Cafe Tô Ngọc Vân"
-                title="Báo sửa chữa"
-                category="Kỹ thuật & Bảo trì Thiết bị"
-                priority="Cao"
-                time="5p"
-              />
-              <TicketComponent
-                location="Sắn Cafe Tô Ngọc Vân"
-                title="Báo sửa chữa"
-                category="Kỹ thuật & Bảo trì Thiết bị"
-                priority="Cao"
-                time="5p"
-              />
-              <TicketComponent
-                location="Sắn Cafe Tô Ngọc Vân"
-                title="Báo sửa chữa"
-                category="Kỹ thuật & Bảo trì Thiết bị"
-                priority="Cao"
-                time="5p"
-              />
+              {/* Ticket List */}
+              <View style={styles.ticketList}>
+                <TicketComponent
+                  location="Sắn Cafe Tô Ngọc Vân"
+                  title="Báo sửa chữa"
+                  category="Kỹ thuật & Bảo trì Thiết bị"
+                  priority="Cao"
+                  time="5p"
+                />
+                <TicketComponent
+                  location="Sắn Cafe Tô Ngọc Vân"
+                  title="Báo sửa chữa"
+                  category="Kỹ thuật & Bảo trì Thiết bị"
+                  priority="Cao"
+                  time="5p"
+                />
+                <TicketComponent
+                  location="Sắn Cafe Tô Ngọc Vân"
+                  title="Báo sửa chữa"
+                  category="Kỹ thuật & Bảo trì Thiết bị"
+                  priority="Cao"
+                  time="5p"
+                />
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Section 2: Chất lượng cửa hàng */}
           <View style={styles.section}>

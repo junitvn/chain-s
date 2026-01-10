@@ -1,8 +1,15 @@
-import { authClient } from '@/lib/auth-client';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, useSignIn as useSignInMutation, useSignOut as useSignOutMutation } from '@/hooks/use-auth-api';
+import { useAuthStore } from '@/stores/auth-store';
+import React, { createContext, useContext } from 'react';
+
+interface Session {
+  user: User;
+  token: string;
+  redirect: boolean;
+}
 
 interface AuthContextType {
-  session: any | null;
+  session: Session | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -11,62 +18,30 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<any | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Check for existing session on mount
-    const checkSession = async () => {
-      try {
-        const { data } = await authClient.getSession();
-        setSession(data);
-      } catch (error) {
-        console.error('Failed to get session:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSession();
-  }, []);
+  const { session } = useAuthStore();
+  const signInMutation = useSignInMutation();
+  const signOutMutation = useSignOutMutation();
 
   const signIn = async (email: string, password: string) => {
     try {
-      const baseURL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${baseURL}/api/auth/sign-in/email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': 'chains://',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Sign in failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setSession(data);
+      await signInMutation.mutateAsync({ email, password });
     } catch (error) {
-      console.error('Sign in error:', error);
+      // Error is already handled in the mutation
       throw error;
     }
   };
 
   const signOut = async () => {
     try {
-      await authClient.signOut();
-      setSession(null);
+      await signOutMutation.mutateAsync();
     } catch (error) {
-      console.error('Sign out error:', error);
+      // Error is already handled in the mutation
       throw error;
     }
   };
+
+  // Only show loading state for sign in/sign out mutations, not for session loading
+  const isLoading = signInMutation.isPending || signOutMutation.isPending;
 
   return (
     <AuthContext.Provider value={{ session, isLoading, signIn, signOut }}>
