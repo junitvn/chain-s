@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/contexts/auth-context';
+import { AbilityProvider } from '@/contexts/ability-context';
 import { queryClient } from '@/lib/query-client';
 
 export default function RootLayout() {
@@ -17,15 +18,17 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <AuthProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-              <Stack.Screen name="select-store" options={{ headerShown: false }} />
-              <Stack.Screen name="checklist" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
+            <AbilityProvider>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+                <Stack.Screen name="select-store" options={{ headerShown: false }} />
+                <Stack.Screen name="checklist" options={{ headerShown: false }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </AbilityProvider>
           </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>

@@ -1,13 +1,20 @@
+import { User } from '@/hooks/use-auth-api';
 import { secureStorage } from '@/lib/storage-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+export interface Session {
+  user: User;
+  token: string;
+  redirect: boolean;
+}
+
 interface AuthState {
   token: string | null;
-  session: any | null;
+  session: Session | null;
   isLoading: boolean;
   setToken: (token: string | null) => void;
-  setSession: (session: any | null) => void;
+  setSession: (session: Session | null) => void;
   setLoading: (isLoading: boolean) => void;
   clearAuth: () => void;
 }

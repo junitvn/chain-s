@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth-store';
+import { Session, useAuthStore } from '@/stores/auth-store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
@@ -26,11 +26,7 @@ export interface User {
   isActive: boolean;
 }
 
-interface SignInResponse {
-  redirect: boolean;
-  token: string;
-  user: User;
-}
+type SignInResponse = Session;
 
 // Sign in mutation
 export function useSignIn() {

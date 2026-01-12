@@ -13,6 +13,7 @@ import { ThemedView } from '@/components/themed-view';
 import { TicketComponent } from '@/components/ticket-component';
 import FEATURE_FLAGS from '@/constants/flag';
 import { BorderRadius, BrandColors, NeutralColors, SemanticColors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useAbility } from '@/contexts/ability-context';
 import { useAuthStore } from '@/stores/auth-store';
 
 const HEADER_HEIGHT = 250;
@@ -21,7 +22,7 @@ export default function HomeScreen() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
   const { session } = useAuthStore();
-  console.log("🚀 ~ HomeScreen ~ session:", session)
+  const ability = useAbility();
 
   // Parallax animation for header (with scale)
   const headerAnimatedStyle = useAnimatedStyle(() => {
@@ -99,8 +100,8 @@ export default function HomeScreen() {
 
         {/* Content Body */}
         <ThemedView style={styles.content}>
-          {/* Section 1: Vấn đề chờ xử lý */}
-          {FEATURE_FLAGS.ENABLE_TICKETS && (
+          {/* Section 1: Vấn đề chờ xử lý - Protected by CASL */}
+          {FEATURE_FLAGS.ENABLE_TICKETS && ability.can('view', 'TicketSection') && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
@@ -140,80 +141,90 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Section 2: Chất lượng cửa hàng */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
-              Chất lượng cửa hàng
-            </Text>
-
-            {/* Store Selector */}
-            <View style={styles.storeSelector}>
-              <Text style={[styles.storeLabel, { color: NeutralColors.gray500 }]}>
-                Chọn cửa hàng / khu vực
+          {/* Section 2: Chất lượng cửa hàng - Protected by CASL */}
+          {ability.can('view', 'StoreQualitySection') && (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
+                Chất lượng cửa hàng
               </Text>
-              <TouchableOpacity style={[styles.storeDropdown, {
-                backgroundColor: '#FFFFFF',
-                borderColor: NeutralColors.gray300,
-              }]}>
-                <Text style={[styles.storeDropdownText, { color: NeutralColors.gray900 }]}>
-                  Khu vực Thanh xuấn (3 cửa hàng)
-                </Text>
-                <Text style={styles.dropdownIcon}>▼</Text>
-              </TouchableOpacity>
-            </View>
 
-            {/* Radar Chart Placeholder */}
-            <View style={[styles.chartCard, {
-              backgroundColor: '#FFFFFF',
-              borderColor: NeutralColors.gray300,
-            }]}>
-              <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
-                Tổng quan Chất lượng
-              </Text>
-              <View style={styles.radarChartPlaceholder}>
-                <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
-                  [Radar Chart]
-                </Text>
-                <Text style={[styles.radarLabel, { color: NeutralColors.gray900 }]}>
-                  Hygiene • Product Quality • Service • Facility • Compliance
-                </Text>
-              </View>
-            </View>
-
-            {/* Trend Chart Placeholder */}
-            <View style={[styles.chartCard, {
-              backgroundColor: '#FFFFFF',
-              borderColor: NeutralColors.gray300,
-            }]}>
-              <View style={styles.trendHeader}>
-                <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
-                  Xu hướng
-                </Text>
-                <Text style={[styles.trendSubtitle, { color: NeutralColors.gray500 }]}>
-                  Last 7 checks
-                </Text>
-              </View>
-              <View style={styles.trendChartPlaceholder}>
-                <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
-                  [Line Chart]
-                </Text>
-                <View style={[styles.scoreLabel, { backgroundColor: SemanticColors.warning50 }]}>
-                  <Text style={[styles.scoreText, { color: SemanticColors.warning }]}>
-                    8.4
+              {/* Store Selector - Protected by CASL */}
+              {ability.can('view', 'StoreSelector') && (
+                <View style={styles.storeSelector}>
+                  <Text style={[styles.storeLabel, { color: NeutralColors.gray500 }]}>
+                    Chọn cửa hàng / khu vực
                   </Text>
+                  <TouchableOpacity style={[styles.storeDropdown, {
+                    backgroundColor: '#FFFFFF',
+                    borderColor: NeutralColors.gray300,
+                  }]}>
+                    <Text style={[styles.storeDropdownText, { color: NeutralColors.gray900 }]}>
+                      Khu vực Thanh xuấn (3 cửa hàng)
+                    </Text>
+                    <Text style={styles.dropdownIcon}>▼</Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
-            </View>
+              )}
 
-            {/* Action Button */}
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: SemanticColors.warning }]}
-            >
-              <Text style={[styles.actionButtonText, { color: '#FAFAFA' }]}>
-                Xem chi tiết
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {/* Radar Chart Placeholder - Protected by CASL */}
+              {ability.can('view', 'RadarChart') && (
+                <View style={[styles.chartCard, {
+                  backgroundColor: '#FFFFFF',
+                  borderColor: NeutralColors.gray300,
+                }]}>
+                  <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
+                    Tổng quan Chất lượng
+                  </Text>
+                  <View style={styles.radarChartPlaceholder}>
+                    <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
+                      [Radar Chart]
+                    </Text>
+                    <Text style={[styles.radarLabel, { color: NeutralColors.gray900 }]}>
+                      Hygiene • Product Quality • Service • Facility • Compliance
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Trend Chart Placeholder - Protected by CASL */}
+              {ability.can('view', 'TrendChart') && (
+                <View style={[styles.chartCard, {
+                  backgroundColor: '#FFFFFF',
+                  borderColor: NeutralColors.gray300,
+                }]}>
+                  <View style={styles.trendHeader}>
+                    <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
+                      Xu hướng
+                    </Text>
+                    <Text style={[styles.trendSubtitle, { color: NeutralColors.gray500 }]}>
+                      Last 7 checks
+                    </Text>
+                  </View>
+                  <View style={styles.trendChartPlaceholder}>
+                    <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
+                      [Line Chart]
+                    </Text>
+                    <View style={[styles.scoreLabel, { backgroundColor: SemanticColors.warning50 }]}>
+                      <Text style={[styles.scoreText, { color: SemanticColors.warning }]}>
+                        8.4
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {/* Action Button - Protected by CASL */}
+              {ability.can('view', 'QualityAction') && (
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: SemanticColors.warning }]}
+                >
+                  <Text style={[styles.actionButtonText, { color: '#FAFAFA' }]}>
+                    Xem chi tiết
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </ThemedView>
       </Animated.ScrollView>
     </View>
