@@ -5,10 +5,11 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider } from '@/contexts/auth-context';
 import { AbilityProvider } from '@/contexts/ability-context';
+import { AuthProvider } from '@/contexts/auth-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { queryClient } from '@/lib/query-client';
+import React from 'react';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -26,6 +27,7 @@ export default function RootLayout() {
                 <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
                 <Stack.Screen name="select-store" options={{ headerShown: false }} />
                 <Stack.Screen name="checklist" options={{ headerShown: false }} />
+                <Stack.Screen name="role-switcher" options={{ headerShown: false }} />
               </Stack>
               <StatusBar style="auto" />
             </AbilityProvider>

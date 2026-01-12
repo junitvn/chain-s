@@ -5,6 +5,7 @@ import { View } from 'react-native';
 
 import { ActionBottomSheet } from '@/components/action-bottom-sheet';
 import { CustomTabBar } from '@/components/custom-tab-bar';
+import { usePermissions } from '@/hooks/use-permissions';
 
 export default function TabLayout() {
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -17,6 +18,10 @@ export default function TabLayout() {
     console.log('Report issue pressed');
     // TODO: Navigate to report issue screen
   };
+
+  const { ability } = usePermissions();
+
+  console.log(ability.can('view', 'QualityAction'));
 
   return (
     <View style={{ flex: 1 }}>

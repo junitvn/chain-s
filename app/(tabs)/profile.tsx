@@ -1,4 +1,5 @@
-import { StyleSheet, View, Text, ScrollView, Alert } from 'react-native';
+import { router } from 'expo-router';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 import { CustomHeader } from '@/components/custom-header';
@@ -9,7 +10,7 @@ export default function ProfileScreen() {
   const colors = Colors[colorScheme ?? 'light'];
 
   const handleSettingsPress = () => {
-    Alert.alert('Settings', 'Settings button pressed');
+    router.push('/role-switcher');
   };
 
   return (
