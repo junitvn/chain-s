@@ -3,7 +3,7 @@
  * These types define the structure for dynamic form generation
  */
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'radio' | 'checkbox' | 'slider' | 'file';
+export type FieldType = 'text' | 'textarea' | 'number' | 'radio' | 'checkbox' | 'slider' | 'file' | 'date';
 
 export type InputType = 'text' | 'email' | 'password' | 'tel' | 'url';
 
@@ -59,7 +59,14 @@ export interface FileField extends BaseField {
   multiple?: boolean;
 }
 
-export type FormField = TextField | NumberField | SliderField | OptionsField | FileField;
+export interface DateField extends BaseField {
+  type: 'date';
+  placeholder?: string;
+  minDate?: Date;
+  maxDate?: Date;
+}
+
+export type FormField = TextField | NumberField | SliderField | OptionsField | FileField | DateField;
 
 export interface FormSchema {
   formId: string;

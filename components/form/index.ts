@@ -1,27 +1,17 @@
 // Form components
-export { TextFieldComponent } from './text-field';
+export { CheckboxFieldComponent } from './checkbox-field';
+export { DateFieldComponent } from './date-field';
+export { DynamicForm } from './dynamic-form';
+export { FormFieldsRenderer } from './fields-renderer';
+export { FileFieldComponent } from './file-field';
 export { NumberFieldComponent } from './number-field';
 export { RadioFieldComponent } from './radio-field';
-export { CheckboxFieldComponent } from './checkbox-field';
 export { SliderFieldComponent } from './slider-field';
-export { FileFieldComponent } from './file-field';
-export { DynamicForm } from './dynamic-form';
+export { TextFieldComponent } from './text-field';
 
 // Types
 export type {
-  FieldType,
-  InputType,
-  OptionsLayout,
-  Option,
-  BaseField,
-  TextField,
-  NumberField,
-  SliderField,
-  OptionsField,
-  FileField,
-  FormField,
-  FormSchema,
-  FormValues,
-  FormFieldProps,
+  BaseField, DateField, FieldType, FileField, FormField, FormFieldProps, FormSchema,
+  FormValues, InputType, NumberField, Option, OptionsField, OptionsLayout, SliderField, TextField
 } from './types';
 

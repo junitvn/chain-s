@@ -1,7 +1,8 @@
 import { Session, useAuthStore } from '@/stores/auth-store';
+import { getApiBaseUrl } from '@/utils/api-config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = getApiBaseUrl();
 const ORIGIN = process.env.EXPO_PUBLIC_ORIGIN || 'https://qaqc-frontend.vercel.app';
 
 interface SignInRequest {
@@ -32,6 +33,7 @@ type SignInResponse = Session;
 export function useSignIn() {
   const { setToken, setSession } = useAuthStore();
 
+  console.log("🚀 ~ useSignIn ~ API_BASE_URL:", API_BASE_URL)
   return useMutation({
     mutationFn: async (credentials: SignInRequest): Promise<SignInResponse> => {
       const response = await fetch(`${API_BASE_URL}/api/auth/sign-in/email`, {

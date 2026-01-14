@@ -1,7 +1,8 @@
-import { StyleSheet, TextInput, View, Pressable } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import React from 'react';
 import type { FormFieldProps, NumberField } from './types';
 
 export function NumberFieldComponent({
@@ -55,11 +56,11 @@ export function NumberFieldComponent({
         {field.label}
         {field.required && <ThemedText style={styles.required}> *</ThemedText>}
       </ThemedText>
-      
+
       {field.helpText && (
         <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
       )}
-      
+
       <View style={[styles.inputContainer, { borderColor }]}>
         <Pressable
           style={[styles.button, { backgroundColor: buttonBg }]}
@@ -67,7 +68,7 @@ export function NumberFieldComponent({
         >
           <ThemedText style={styles.buttonText}>−</ThemedText>
         </Pressable>
-        
+
         <TextInput
           style={[
             styles.input,
@@ -81,7 +82,7 @@ export function NumberFieldComponent({
           keyboardType="numeric"
           textAlign="center"
         />
-        
+
         <Pressable
           style={[styles.button, { backgroundColor: buttonBg }]}
           onPress={handleIncrement}
@@ -89,7 +90,7 @@ export function NumberFieldComponent({
           <ThemedText style={styles.buttonText}>+</ThemedText>
         </Pressable>
       </View>
-      
+
       {(field.min !== undefined || field.max !== undefined) && (
         <ThemedText style={styles.range}>
           {field.min !== undefined && `Min: ${field.min}`}
@@ -97,7 +98,7 @@ export function NumberFieldComponent({
           {field.max !== undefined && `Max: ${field.max}`}
         </ThemedText>
       )}
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );

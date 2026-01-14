@@ -1,7 +1,8 @@
 import { useQuery, useMutation, UseQueryOptions, UseMutationOptions, QueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
+import { getApiBaseUrl } from '@/utils/api-config';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Get authorization headers with token from Zustand store

@@ -1,23 +1,15 @@
-import { useState, useCallback } from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
-import { TextFieldComponent } from './text-field';
-import { NumberFieldComponent } from './number-field';
-import { RadioFieldComponent } from './radio-field';
-import { CheckboxFieldComponent } from './checkbox-field';
-import { SliderFieldComponent } from './slider-field';
-import { FileFieldComponent } from './file-field';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { FormFieldsRenderer } from './fields-renderer';
 import type {
   FormSchema,
-  FormField,
   FormValues,
-  TextField,
   NumberField,
   SliderField,
-  OptionsField,
-  FileField,
+  TextField,
 } from './types';
 
 interface DynamicFormProps {
@@ -43,6 +35,8 @@ export function DynamicForm({
         defaults[field.id] = [];
       } else if (field.type === 'number') {
         defaults[field.id] = 0;
+      } else if (field.type === 'date') {
+        defaults[field.id] = new Date().toISOString();
       } else {
         defaults[field.id] = '';
       }
@@ -141,76 +135,6 @@ export function DynamicForm({
     }
   };
 
-  const renderField = (field: FormField) => {
-    if (field.hidden) return null;
-
-    const commonProps = {
-      value: values[field.id],
-      onChange: (value: FormValues[string]) => handleChange(field.id, value),
-      error: errors[field.id],
-    };
-
-    switch (field.type) {
-      case 'text':
-      case 'textarea':
-        return (
-          <TextFieldComponent
-            key={field.id}
-            field={field as TextField}
-            {...commonProps}
-          />
-        );
-
-      case 'number':
-        return (
-          <NumberFieldComponent
-            key={field.id}
-            field={field as NumberField}
-            {...commonProps}
-          />
-        );
-
-      case 'radio':
-        return (
-          <RadioFieldComponent
-            key={field.id}
-            field={field as OptionsField}
-            {...commonProps}
-          />
-        );
-
-      case 'checkbox':
-        return (
-          <CheckboxFieldComponent
-            key={field.id}
-            field={field as OptionsField}
-            {...commonProps}
-          />
-        );
-
-      case 'slider':
-        return (
-          <SliderFieldComponent
-            key={field.id}
-            field={field as SliderField}
-            {...commonProps}
-          />
-        );
-
-      case 'file':
-        return (
-          <FileFieldComponent
-            key={field.id}
-            field={field as FileField}
-            {...commonProps}
-          />
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       <View style={[styles.container, { backgroundColor: cardBg }]}>
@@ -220,7 +144,12 @@ export function DynamicForm({
         )}
 
         <View style={styles.fields}>
-          {schema.fields.map(renderField)}
+          <FormFieldsRenderer
+            fields={schema.fields}
+            values={values}
+            onChange={handleChange}
+            errors={errors}
+          />
         </View>
 
         <Pressable
