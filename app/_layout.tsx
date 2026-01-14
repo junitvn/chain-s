@@ -26,6 +26,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
                 <Stack.Screen name="select-store" options={{ headerShown: false }} />
+                <Stack.Screen name="questionnaires" options={{ headerShown: false }} />
                 <Stack.Screen name="checklist" options={{ headerShown: false }} />
                 <Stack.Screen name="role-switcher" options={{ headerShown: false }} />
               </Stack>

@@ -1,9 +1,10 @@
-import { router } from 'expo-router';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
 import { CustomHeader } from '@/components/custom-header';
 import { SettingsIcon } from '@/components/icons';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { router } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
@@ -15,8 +16,8 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader 
-        title="Profile" 
+      <CustomHeader
+        title="Profile"
         subtitle="Manage your account"
         showBackButton={false}
         rightIcon={<SettingsIcon width={24} height={24} color={colors.icon} />}

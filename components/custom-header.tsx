@@ -204,7 +204,7 @@ export function CustomHeader({
         </View>
 
         {/* Right Section - Action Button/Icon */}
-        <View style={styles.rightSection}>
+        <View style={[styles.rightSection, rightComponent && styles.rightSectionFlex]}>
           {rightComponent ? (
             rightComponent
           ) : rightIcon ? (
@@ -295,6 +295,11 @@ const styles = StyleSheet.create({
     width: 44, // Minimum touch target size (44x44)
     alignItems: 'flex-end',
     justifyContent: 'center',
+  },
+  rightSectionFlex: {
+    width: 'auto',
+    minWidth: 44,
+    flexShrink: 0,
   },
   rightButton: {
     width: 44,

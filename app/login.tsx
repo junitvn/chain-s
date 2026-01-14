@@ -26,8 +26,8 @@ import { useAuth } from '@/contexts/auth-context';
 export default function LoginScreen() {
   const router = useRouter();
   const { signIn } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@san.cafe');
+  const [password, setPassword] = useState('password123');
   const [focusedInput, setFocusedInput] = useState<'email' | 'password' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,7 +71,6 @@ export default function LoginScreen() {
         <View style={styles.loginCard}>
           {/* Logo / Title Section */}
           <View style={styles.titleSection}>
-            <Text style={[styles.welcomeText, { color: NeutralColors.gray700 }]}>Xin chào</Text>
             <Text style={[styles.appTitle, { color: BrandColors.headerOverlay }]}>ChainS</Text>
             <Text style={[styles.subtitle, { color: NeutralColors.gray600 }]}>
               Đăng nhập để tiếp tục
@@ -215,6 +214,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacing['2xl'],
   },
   titleSection: {
+    paddingTop: Spacing['4xl'],
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing['2xl'],
     alignItems: 'flex-start',

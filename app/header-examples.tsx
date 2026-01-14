@@ -1,8 +1,9 @@
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors, Spacing, Typography, BrandColors } from '@/constants/theme';
 import { CustomHeader } from '@/components/custom-header';
-import { SettingsIcon, NotificationIcon, PlusIcon, CloseIcon } from '@/components/icons';
+import { CloseIcon, NotificationIcon, PlusIcon, SettingsIcon } from '@/components/icons';
+import { BrandColors, Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import React from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 /**
  * HeaderExamplesScreen - Demonstrates various CustomHeader configurations

@@ -21,6 +21,7 @@ export { ClipboardCheckIcon } from './clipboard-check-icon';
 export { SearchIcon } from './search-icon';
 export { MapPinIcon } from './map-pin-icon';
 export { CheckCircleIcon } from './check-circle-icon';
+export { LogoutIcon } from './logout-icon';
 
 // Add more icon exports here as you create them from Figma
 

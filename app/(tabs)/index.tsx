@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
@@ -9,19 +10,27 @@ import Animated, {
   useScrollOffset,
 } from 'react-native-reanimated';
 
+import { LogoutIcon, SettingsIcon } from '@/components/icons';
 import { ThemedView } from '@/components/themed-view';
 import { TicketComponent } from '@/components/ticket-component';
 import FEATURE_FLAGS from '@/constants/flag';
-import { BorderRadius, BrandColors, NeutralColors, SemanticColors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, BrandColors, NeutralColors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAbility } from '@/contexts/ability-context';
+import { useAuth } from '@/contexts/auth-context';
 import { useAuthStore } from '@/stores/auth-store';
+import SelectStoreComponent from '../select-store/select-store';
 
 const HEADER_HEIGHT = 250;
 
-export default function HomeScreen() {
+interface HomeScreenProps {
+  showHeader?: boolean;
+}
+
+export default function HomeScreen({ showHeader = false }: HomeScreenProps) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
   const { session } = useAuthStore();
+  const { signOut } = useAuth();
   const ability = useAbility();
 
   // Parallax animation for header (with scale)
@@ -56,6 +65,19 @@ export default function HomeScreen() {
       ],
     };
   });
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.replace('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const handleSettingsPress = () => {
+    router.push('/role-switcher');
+  };
 
   return (
     <View style={styles.container}>
@@ -97,6 +119,30 @@ export default function HomeScreen() {
           <Text style={styles.greetingText}>Xin chào</Text>
           <Text style={styles.userName}>{session?.user.name}</Text>
         </Animated.View>
+
+        {/* Header Icons - Settings and Logout (only for staff) */}
+        {showHeader && (
+          <Animated.View
+            style={[styles.headerIconsContainer, greetingAnimatedStyle]}
+          >
+            <TouchableOpacity
+              onPress={handleSettingsPress}
+              style={styles.headerIconButton}
+              accessibilityLabel="Settings"
+              accessibilityRole="button"
+            >
+              <SettingsIcon width={24} height={24} color="#FFFFFF" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={styles.headerIconButton}
+              accessibilityLabel="Logout"
+              accessibilityRole="button"
+            >
+              <LogoutIcon width={24} height={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
         {/* Content Body */}
         <ThemedView style={styles.content}>
@@ -141,90 +187,7 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Section 2: Chất lượng cửa hàng - Protected by CASL */}
-          {ability.can('view', 'StoreQualitySection') && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: NeutralColors.gray900 }]}>
-                Chất lượng cửa hàng
-              </Text>
-
-              {/* Store Selector - Protected by CASL */}
-              {ability.can('view', 'StoreSelector') && (
-                <View style={styles.storeSelector}>
-                  <Text style={[styles.storeLabel, { color: NeutralColors.gray500 }]}>
-                    Chọn cửa hàng / khu vực
-                  </Text>
-                  <TouchableOpacity style={[styles.storeDropdown, {
-                    backgroundColor: '#FFFFFF',
-                    borderColor: NeutralColors.gray300,
-                  }]}>
-                    <Text style={[styles.storeDropdownText, { color: NeutralColors.gray900 }]}>
-                      Khu vực Thanh xuấn (3 cửa hàng)
-                    </Text>
-                    <Text style={styles.dropdownIcon}>▼</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {/* Radar Chart Placeholder - Protected by CASL */}
-              {ability.can('view', 'RadarChart') && (
-                <View style={[styles.chartCard, {
-                  backgroundColor: '#FFFFFF',
-                  borderColor: NeutralColors.gray300,
-                }]}>
-                  <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
-                    Tổng quan Chất lượng
-                  </Text>
-                  <View style={styles.radarChartPlaceholder}>
-                    <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
-                      [Radar Chart]
-                    </Text>
-                    <Text style={[styles.radarLabel, { color: NeutralColors.gray900 }]}>
-                      Hygiene • Product Quality • Service • Facility • Compliance
-                    </Text>
-                  </View>
-                </View>
-              )}
-
-              {/* Trend Chart Placeholder - Protected by CASL */}
-              {ability.can('view', 'TrendChart') && (
-                <View style={[styles.chartCard, {
-                  backgroundColor: '#FFFFFF',
-                  borderColor: NeutralColors.gray300,
-                }]}>
-                  <View style={styles.trendHeader}>
-                    <Text style={[styles.chartTitle, { color: NeutralColors.gray900 }]}>
-                      Xu hướng
-                    </Text>
-                    <Text style={[styles.trendSubtitle, { color: NeutralColors.gray500 }]}>
-                      Last 7 checks
-                    </Text>
-                  </View>
-                  <View style={styles.trendChartPlaceholder}>
-                    <Text style={[styles.placeholderText, { color: NeutralColors.gray400 }]}>
-                      [Line Chart]
-                    </Text>
-                    <View style={[styles.scoreLabel, { backgroundColor: SemanticColors.warning50 }]}>
-                      <Text style={[styles.scoreText, { color: SemanticColors.warning }]}>
-                        8.4
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-
-              {/* Action Button - Protected by CASL */}
-              {ability.can('view', 'QualityAction') && (
-                <TouchableOpacity
-                  style={[styles.actionButton, { backgroundColor: SemanticColors.warning }]}
-                >
-                  <Text style={[styles.actionButtonText, { color: '#FAFAFA' }]}>
-                    Xem chi tiết
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+          <SelectStoreComponent />
         </ThemedView>
       </Animated.ScrollView>
     </View>
@@ -293,8 +256,6 @@ const styles = StyleSheet.create({
   // Content styles
   content: {
     flex: 1,
-    padding: 35,
-    paddingHorizontal: 16,
     gap: 26,
     overflow: 'hidden',
     borderTopLeftRadius: BorderRadius.xl,
@@ -434,5 +395,22 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.medium,
     lineHeight: Typography.sizes.sm * Typography.lineHeights.normal,
+  },
+
+  // Header icons styles
+  headerIconsContainer: {
+    position: 'absolute',
+    top: HEADER_HEIGHT - 150,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    zIndex: 10,
+  },
+  headerIconButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
