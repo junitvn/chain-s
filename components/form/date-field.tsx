@@ -4,6 +4,7 @@ import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-nati
 
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { FormHeader } from './form-header';
 import type { DateField, FormFieldProps, FormValues } from './types';
 
 // Lazy import DatePicker to handle module loading errors
@@ -16,9 +17,9 @@ const getDatePicker = () => {
   if (datePickerChecked) {
     return { DatePicker, available: datePickerAvailable };
   }
-  
+
   datePickerChecked = true;
-  
+
   try {
     // Try to require the module
     const datePickerModule = require('react-native-date-picker');
@@ -29,7 +30,7 @@ const getDatePicker = () => {
     datePickerAvailable = false;
     DatePicker = null;
   }
-  
+
   return { DatePicker, available: datePickerAvailable };
 };
 
@@ -49,13 +50,21 @@ export function DateFieldComponent({
     return null;
   };
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(() => parseDate(value));
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    const parsed = parseDate(value);
+    return parsed || new Date();
+  });
   const [showPicker, setShowPicker] = useState(false);
 
-  // Update selectedDate when value prop changes
+  // Auto-select today as default when no value is provided
   useEffect(() => {
     const parsed = parseDate(value);
-    if (parsed?.getTime() !== selectedDate?.getTime()) {
+    if (!parsed && !value) {
+      // No value provided, set today as default
+      const today = new Date();
+      setSelectedDate(today);
+      onChange(today.toISOString());
+    } else if (parsed?.getTime() !== selectedDate?.getTime()) {
       setSelectedDate(parsed);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,7 +72,7 @@ export function DateFieldComponent({
 
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor(
-    { light: '#F5F5F5', dark: '#2A2A2A' },
+    { light: '#fff', dark: '#2A2A2A' },
     'background'
   );
   const borderColor = error ? '#E53935' : useThemeColor(
@@ -105,15 +114,8 @@ export function DateFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-      
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
-      
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
+
       <TouchableOpacity
         onPress={handleOpenPicker}
         activeOpacity={0.7}
@@ -137,7 +139,7 @@ export function DateFieldComponent({
                 color: selectedDate ? textColor : placeholderColor,
               },
             ]}
-            value={formatDate(selectedDate)}
+            value={formatDate(selectedDate || new Date())}
             placeholder={field.placeholder || 'Select date'}
             placeholderTextColor={placeholderColor}
             editable={false}
@@ -162,7 +164,7 @@ export function DateFieldComponent({
           />
         );
       })()}
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );
@@ -175,7 +177,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 6,
   },
   required: {
     color: '#E53935',

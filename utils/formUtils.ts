@@ -1,5 +1,5 @@
 import { NumberField, OptionsField, TextField } from "@/components/form";
-import { DateField, FormField } from "@/components/form/types";
+import { DateField, FormField, RichTextField } from "@/components/form/types";
 import { Question } from "@/hooks/use-brands-api";
 
 export function questionToFormField(question: Question): FormField | null {
@@ -34,6 +34,13 @@ export function questionToFormField(question: Question): FormField | null {
                 type: 'textarea' as const,
                 placeholder: question.placeholder || undefined,
             } as TextField;
+
+        case 'RICH_TEXT':
+            return {
+                ...baseField,
+                type: 'rich_text' as const,
+                placeholder: question.placeholder || undefined,
+            } as RichTextField;
 
         case 'SELECT':
             return {

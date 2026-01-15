@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import React from 'react';
+import { FormHeader } from './form-header';
 import type { FormFieldProps, NumberField } from './types';
 
 export function NumberFieldComponent({
@@ -13,7 +14,7 @@ export function NumberFieldComponent({
 }: FormFieldProps<NumberField>) {
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor(
-    { light: '#F5F5F5', dark: '#2A2A2A' },
+    { light: '#fff', dark: '#2A2A2A' },
     'background'
   );
   const borderColor = error ? '#E53935' : useThemeColor(
@@ -21,7 +22,7 @@ export function NumberFieldComponent({
     'background'
   );
   const buttonBg = useThemeColor(
-    { light: '#E8E8E8', dark: '#3A3A3A' },
+    { light: '#f0f0f0', dark: '#3A3A3A' },
     'background'
   );
 
@@ -52,14 +53,7 @@ export function NumberFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
 
       <View style={[styles.inputContainer, { borderColor }]}>
         <Pressable
@@ -111,7 +105,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 6,
   },
   required: {
     color: '#E53935',
@@ -130,7 +123,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 48,
-    height: 48,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },

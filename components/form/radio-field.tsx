@@ -1,7 +1,9 @@
-import { StyleSheet, View, Pressable } from 'react-native';
-
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { Colors } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { FormHeader } from './form-header';
 import type { FormFieldProps, OptionsField } from './types';
 
 export function RadioFieldComponent({
@@ -14,7 +16,10 @@ export function RadioFieldComponent({
     { light: '#D0D0D0', dark: '#505050' },
     'background'
   );
-  const selectedColor = '#2196F3';
+  const selectedColor = useThemeColor(
+    { light: Colors.light.primary, dark: Colors.dark.primary },
+    'background'
+  );
   const pressedBg = useThemeColor(
     { light: '#F0F0F0', dark: '#2A2A2A' },
     'background'
@@ -28,19 +33,12 @@ export function RadioFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-      
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
-      
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
+
       <View style={[styles.optionsContainer, isHorizontal && styles.horizontal]}>
         {field.options.map((option, index) => {
           const isSelected = value === option.value;
-          
+
           return (
             <Pressable
               key={index}
@@ -66,7 +64,7 @@ export function RadioFieldComponent({
           );
         })}
       </View>
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );
@@ -74,20 +72,7 @@ export function RadioFieldComponent({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  required: {
-    color: '#E53935',
-  },
-  helpText: {
-    fontSize: 12,
-    opacity: 0.7,
-    marginBottom: 6,
+    marginBottom: 16,
   },
   optionsContainer: {
     gap: 8,
@@ -99,7 +84,7 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 4,
     borderRadius: 8,
   },

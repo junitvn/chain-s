@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
  * Update these when importing new Figma designs
  */
 export const BrandColors = {
-  primary: '#0a7ea4',
+  primary: '#F97316',
   primaryDark: '#0a6d8f',
   primaryLight: '#3d9db8',
   secondary: '#6366F1',

@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { StyleSheet, View, GestureResponderEvent } from 'react-native';
+import React, { useState } from 'react';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { FormHeader } from './form-header';
 import type { FormFieldProps, SliderField } from './types';
 
 export function SliderFieldComponent({
@@ -12,14 +13,14 @@ export function SliderFieldComponent({
   error,
 }: FormFieldProps<SliderField>) {
   const trackBg = useThemeColor(
-    { light: '#E0E0E0', dark: '#404040' },
+    { light: '#fff', dark: '#404040' },
     'background'
   );
   const trackFillColor = '#2196F3';
   const thumbColor = '#2196F3';
 
   const [sliderWidth, setSliderWidth] = useState(0);
-  
+
   const numValue = typeof value === 'number' ? value : field.min;
   const step = field.step ?? 1;
   const range = field.max - field.min;
@@ -29,11 +30,11 @@ export function SliderFieldComponent({
     const position = pageX - layoutX;
     const ratio = Math.max(0, Math.min(1, position / sliderWidth));
     let newValue = field.min + ratio * range;
-    
+
     // Snap to step
     newValue = Math.round(newValue / step) * step;
     newValue = Math.max(field.min, Math.min(field.max, newValue));
-    
+
     return newValue;
   };
 
@@ -58,20 +59,12 @@ export function SliderFieldComponent({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View>
-          <ThemedText style={styles.label}>
-            {field.label}
-            {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-          </ThemedText>
-          {field.helpText && (
-            <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-          )}
-        </View>
+        <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
         <View style={styles.valueContainer}>
           <ThemedText style={styles.value}>{numValue}</ThemedText>
         </View>
       </View>
-      
+
       <View
         style={styles.sliderContainer}
         onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
@@ -88,7 +81,7 @@ export function SliderFieldComponent({
             ]}
           />
         </View>
-        
+
         <View
           style={[
             styles.thumb,
@@ -110,12 +103,12 @@ export function SliderFieldComponent({
           </View>
         )}
       </View>
-      
+
       <View style={styles.rangeLabels}>
         <ThemedText style={styles.rangeLabel}>{field.min}</ThemedText>
         <ThemedText style={styles.rangeLabel}>{field.max}</ThemedText>
       </View>
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );

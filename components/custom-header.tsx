@@ -204,7 +204,7 @@ export function CustomHeader({
         </View>
 
         {/* Right Section - Action Button/Icon */}
-        <View style={[styles.rightSection, rightComponent && styles.rightSectionFlex]}>
+        <View style={[styles.rightSection, rightComponent ? styles.rightSectionFlex : undefined]}>
           {rightComponent ? (
             rightComponent
           ) : rightIcon ? (

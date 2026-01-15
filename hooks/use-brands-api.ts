@@ -1,4 +1,4 @@
-import { useAuthenticatedQuery } from '@/hooks/use-api';
+import { useAuthenticatedQuery, useAuthenticatedMutation } from '@/hooks/use-api';
 
 export interface Store {
   id: string;
@@ -274,5 +274,37 @@ export function useQuestionnaire(questionnaireId: string | null) {
     {
       enabled: !!questionnaireId,
     }
+  );
+}
+
+export interface SubmissionRequest {
+  questionnaireId: string;
+  storeId: string;
+  language: string;
+  data: Record<string, any>;
+  isTest?: boolean;
+}
+
+interface SubmissionApiResponse {
+  status: string;
+  data: {
+    id: string;
+    questionnaireId: string;
+    storeId: string;
+    language: string;
+    data: Record<string, any>;
+    isTest: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+/**
+ * Hook to submit a checklist submission
+ */
+export function useSubmitChecklist() {
+  return useAuthenticatedMutation<SubmissionApiResponse, SubmissionRequest>(
+    '/api/v1/submissions',
+    'POST'
   );
 }

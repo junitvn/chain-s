@@ -1,7 +1,8 @@
-import { StyleSheet, TextInput, View } from 'react-native';
-
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import React from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
+import { FormHeader } from './form-header';
 import type { FormFieldProps, TextField } from './types';
 
 export function TextFieldComponent({
@@ -12,7 +13,7 @@ export function TextFieldComponent({
 }: FormFieldProps<TextField>) {
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor(
-    { light: '#F5F5F5', dark: '#2A2A2A' },
+    { light: '#fff', dark: '#2A2A2A' },
     'background'
   );
   const borderColor = error ? '#E53935' : useThemeColor(
@@ -41,15 +42,8 @@ export function TextFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-      
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
-      
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
+
       <TextInput
         style={[
           styles.input,
@@ -73,7 +67,7 @@ export function TextFieldComponent({
         numberOfLines={isTextarea ? 4 : 1}
         textAlignVertical={isTextarea ? 'top' : 'center'}
       />
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );
@@ -86,7 +80,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 6,
   },
   required: {
     color: '#E53935',
@@ -102,6 +95,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
+    marginTop: 6,
   },
   textarea: {
     minHeight: 120,

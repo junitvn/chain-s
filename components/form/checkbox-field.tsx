@@ -1,7 +1,10 @@
-import { StyleSheet, View, Pressable } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { Colors } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { FormHeader } from './form-header';
 import type { FormFieldProps, OptionsField } from './types';
 
 export function CheckboxFieldComponent({
@@ -14,20 +17,23 @@ export function CheckboxFieldComponent({
     { light: '#D0D0D0', dark: '#505050' },
     'background'
   );
-  const selectedColor = '#4CAF50';
+  const selectedColor = useThemeColor(
+    { light: Colors.light.primary, dark: Colors.dark.primary },
+    'background'
+  );
   const pressedBg = useThemeColor(
     { light: '#F0F0F0', dark: '#2A2A2A' },
     'background'
   );
 
   const isHorizontal = field.layout === 'horizontal';
-  
+
   // Value is expected to be an array of selected option values
   const selectedValues = Array.isArray(value) ? value : [];
 
   const handleToggle = (optionValue: string | number | boolean) => {
     const isSelected = selectedValues.includes(optionValue as boolean);
-    
+
     if (isSelected) {
       onChange(selectedValues.filter((v) => v !== optionValue));
     } else {
@@ -37,19 +43,12 @@ export function CheckboxFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-      
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
-      
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
+
       <View style={[styles.optionsContainer, isHorizontal && styles.horizontal]}>
         {field.options.map((option, index) => {
           const isSelected = selectedValues.includes(option.value as boolean);
-          
+
           return (
             <Pressable
               key={index}
@@ -76,7 +75,7 @@ export function CheckboxFieldComponent({
           );
         })}
       </View>
-      
+
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
   );
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 4,
     borderRadius: 8,
   },
@@ -121,14 +120,15 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 6,
     borderWidth: 2,
+    marginRight: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
   checkmark: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: 'bold',
+    marginTop: -2
   },
   optionLabel: {
     fontSize: 16,

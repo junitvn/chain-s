@@ -1,9 +1,11 @@
-import { StyleSheet, View, Pressable } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
-import type { FormFieldProps, FileField } from './types';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { FormHeader } from './form-header';
+import type { FileField, FormFieldProps } from './types';
 
 interface FileInfo {
   uri: string;
@@ -89,14 +91,7 @@ export function FileFieldComponent({
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>
-        {field.label}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
-
-      {field.helpText && (
-        <ThemedText style={styles.helpText}>{field.helpText}</ThemedText>
-      )}
+      <FormHeader title={field.label} helpText={field.helpText} required={field.required} />
 
       <Pressable
         style={[
@@ -164,7 +159,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 6,
   },
   required: {
     color: '#E53935',

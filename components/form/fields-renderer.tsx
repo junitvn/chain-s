@@ -46,6 +46,7 @@ export function FormFieldsRenderer({
         switch (field.type) {
           case 'text':
           case 'textarea':
+          case 'rich_text':
             return (
               <TextFieldComponent
                 key={field.id}

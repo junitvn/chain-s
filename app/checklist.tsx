@@ -7,13 +7,14 @@ import {
 import { Collapsible } from "@/components/ui/collapsible";
 import { Gap } from "@/components/ui/gap";
 import { BorderRadius, Colors, SemanticColors, Shadows, Spacing, Typography } from "@/constants/theme";
-import { useQuestionnaire } from "@/hooks/use-brands-api";
+import { useQuestionnaire, useSubmitChecklist } from "@/hooks/use-brands-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAuthStore } from "@/stores/auth-store";
 import { questionToFormField } from "@/utils/formUtils";
 import dayjs from "dayjs";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 // Helper function to convert Question to FormField
 
@@ -21,9 +22,12 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from
 export default function Checklist() {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const router = useRouter();
     const params = useLocalSearchParams<{ questionnaireId: string, store: string, storeId: string }>();
     const [generalNote, setGeneralNote] = useState('');
     const [formValues, setFormValues] = useState<FormValues>({});
+    const { session } = useAuthStore();
+    const submitMutation = useSubmitChecklist();
 
     // Fetch questionnaire data
     const { data: questionnaireData, isLoading } = useQuestionnaire(params.questionnaireId || null);
@@ -39,7 +43,6 @@ export default function Checklist() {
 
     // Convert questions to form fields
     const formFields = useMemo(() => {
-        console.log("🚀 ~ Checklist ~ questionnaireData:", questionnaireData)
         if (!questionnaireData?.data?.questions) return [];
         return questionnaireData.data.questions
             .map(questionToFormField)
@@ -61,8 +64,11 @@ export default function Checklist() {
             if (value === undefined || value === null) return false;
 
             switch (field.type) {
+                case 'date':
+                    return value !== '' && value !== null;
                 case 'text':
                 case 'textarea':
+                case 'rich_text':
                     return typeof value === 'string' && value.trim().length > 0;
                 case 'radio':
                     return value !== '' && value !== null;
@@ -80,6 +86,88 @@ export default function Checklist() {
             totalSteps: formFields.length,
         };
     }, [formFields, formValues]);
+
+    // Validate all required fields are filled
+    const isFormValid = useMemo(() => {
+        if (!questionnaireData?.data?.questions) return false;
+
+        return questionnaireData.data.questions.every((question) => {
+            if (!question.required) return true;
+
+            const field = formFields.find((f) => f.id === question.id);
+            if (!field) return true;
+
+            const value = formValues[field.id];
+
+            if (value === undefined || value === null) return false;
+
+            switch (field.type) {
+                case 'date':
+                    return value !== '' && value !== null;
+                case 'text':
+                case 'textarea':
+                case 'rich_text':
+                    return typeof value === 'string' && value.trim().length > 0;
+                case 'radio':
+                    return value !== '' && value !== null;
+                case 'checkbox':
+                    return Array.isArray(value) && value.length > 0;
+                case 'number':
+                    return typeof value === 'number' && !isNaN(value);
+                default:
+                    return false;
+            }
+        });
+    }, [formFields, formValues, questionnaireData?.data?.questions]);
+
+    // Handle form submission
+    const handleSubmit = useCallback(async () => {
+        if (!isFormValid) {
+            Alert.alert('Lỗi', 'Vui lòng điền đầy đủ các trường bắt buộc');
+            return;
+        }
+
+        if (!params.questionnaireId || !params.storeId) {
+            Alert.alert('Lỗi', 'Thiếu thông tin questionnaire hoặc store');
+            return;
+        }
+
+        if (!session?.user?.language) {
+            Alert.alert('Lỗi', 'Không tìm thấy ngôn ngữ người dùng');
+            return;
+        }
+
+        // Map form values to question keys
+        const submissionData: Record<string, any> = {};
+        questionnaireData?.data?.questions.forEach((question) => {
+            const field = formFields.find((f) => f.id === question.id);
+            if (field) {
+                const value = formValues[field.id];
+                if (value !== undefined && value !== null) {
+                    submissionData[question.key] = value;
+                }
+            }
+        });
+
+        try {
+            await submitMutation.mutateAsync({
+                questionnaireId: params.questionnaireId,
+                storeId: params.storeId,
+                language: session.user.language,
+                data: submissionData,
+                isTest: false,
+            });
+
+            Alert.alert('Thành công', 'Đã gửi báo cáo thành công', [
+                {
+                    text: 'OK',
+                    onPress: () => router.back(),
+                },
+            ]);
+        } catch (error) {
+            Alert.alert('Lỗi', error instanceof Error ? error.message : 'Không thể gửi báo cáo');
+        }
+    }, [isFormValid, params, session, formValues, formFields, questionnaireData, submitMutation, router]);
 
     if (isLoading) {
         return (
@@ -170,6 +258,31 @@ export default function Checklist() {
                     values={formValues}
                     onChange={handleFieldChange}
                 />
+
+                <Gap size={Spacing.lg} />
+
+                {/* Submit Button */}
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.submitButton,
+                        {
+                            backgroundColor: isFormValid ? colors.tint : colors.border,
+                            opacity: pressed ? 0.8 : 1,
+                        },
+                    ]}
+                    onPress={handleSubmit}
+                    disabled={!isFormValid || submitMutation.isPending}
+                >
+                    {submitMutation.isPending ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                        <Text style={styles.submitButtonText}>
+                            Gửi báo cáo
+                        </Text>
+                    )}
+                </Pressable>
+
+                <Gap size={Spacing.md} />
             </ScrollView>
         </View>
     );
@@ -211,5 +324,19 @@ const styles = StyleSheet.create({
         fontSize: Typography.sizes.base,
         fontWeight: Typography.weights.normal,
         minHeight: 120,
+    },
+    submitButton: {
+        borderRadius: BorderRadius.lg,
+        paddingVertical: Spacing.md,
+        paddingHorizontal: Spacing.lg,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 52,
+        ...Shadows.md,
+    },
+    submitButtonText: {
+        fontSize: Typography.sizes.lg,
+        fontWeight: Typography.weights.semibold,
+        color: '#FFFFFF',
     },
 });       
