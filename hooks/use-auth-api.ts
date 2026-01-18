@@ -87,6 +87,7 @@ export function useSignOut() {
             'Origin': ORIGIN,
             ...(token && { Authorization: `Bearer ${token}` }),
           },
+          body: JSON.stringify({}),
         });
 
         if (!response.ok) {
