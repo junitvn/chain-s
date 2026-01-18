@@ -33,7 +33,6 @@ type SignInResponse = Session;
 export function useSignIn() {
   const { setToken, setSession } = useAuthStore();
 
-  console.log("🚀 ~ useSignIn ~ API_BASE_URL:", API_BASE_URL)
   return useMutation({
     mutationFn: async (credentials: SignInRequest): Promise<SignInResponse> => {
       const response = await fetch(`${API_BASE_URL}/api/auth/sign-in/email`, {

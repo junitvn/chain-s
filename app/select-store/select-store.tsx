@@ -36,12 +36,12 @@ export default function SelectStoreComponent() {
     // Get all stores from brands
     const allStores = useMemo(() => {
         if (!brands || !Array.isArray(brands)) return [];
-        
+
         if (!selectedBrandId) {
             // Return all stores from all brands
             return brands.flatMap(brand => brand.stores || []);
         }
-        
+
         // Return stores from selected brand
         const selectedBrand = brands.find(brand => brand.id === selectedBrandId);
         return selectedBrand?.stores || [];
@@ -50,11 +50,11 @@ export default function SelectStoreComponent() {
     // Build brand options
     const brandOptions = useMemo(() => {
         if (!brands || !Array.isArray(brands)) {
-            return [{ label: 'Tất cả thương hiệu', value: 'all' }];
+            return [{ label: 'All Brands', value: 'all' }];
         }
         return [
-            { label: 'Tất cả thương hiệu', value: 'all' },
-            ...brands.map(brand => ({ label: brand.name || 'Không có tên', value: brand.id }))
+            { label: 'All Brands', value: 'all' },
+            ...brands.map(brand => ({ label: brand.name || 'No name', value: brand.id }))
         ];
     }, [brands]);
 
@@ -100,13 +100,13 @@ export default function SelectStoreComponent() {
         <View style={[styles.container, { backgroundColor: 'white' }]}>
             <View style={styles.content}>
                 <View style={styles.filterContainer}>
-                    <Text style={styles.filterTitle}>Thương hiệu</Text>
+                    <Text style={styles.filterTitle}>Brand</Text>
                     <CustomSelect
                         options={brandOptions}
                         value={selectedBrandId || 'all'}
                         onValueChange={handleBrandChange}
-                        placeholder="Chọn thương hiệu"
-                        accessibilityLabel="Chọn thương hiệu"
+                        placeholder="Select brand"
+                        accessibilityLabel="Select brand"
                     />
                 </View>
 
@@ -121,7 +121,7 @@ export default function SelectStoreComponent() {
                                 color: colors.text,
                             }
                         ]}
-                        placeholder="Tìm kiếm cửa hàng..."
+                        placeholder="Search store..."
                         placeholderTextColor={NeutralColors.gray400}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -141,7 +141,7 @@ export default function SelectStoreComponent() {
                     >
                         {/* Results Count */}
                         <Text style={[styles.resultsCount, { color: colors.textSecondary }]}>
-                            {filteredStores.length} cửa hàng
+                            {filteredStores.length} stores
                         </Text>
 
                         {/* Store Cards */}
@@ -176,7 +176,7 @@ export default function SelectStoreComponent() {
                                         ]}
                                         numberOfLines={1}
                                     >
-                                        {store.name || 'Không có tên'}
+                                        {store.name || 'No name'}
                                     </Text>
                                     {store.code && (
                                         <Text
@@ -207,10 +207,10 @@ export default function SelectStoreComponent() {
                             <View style={styles.emptyState}>
                                 <SearchIcon width={48} height={48} color={NeutralColors.gray300} />
                                 <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                                    Không tìm thấy cửa hàng
+                                    No store found
                                 </Text>
                                 <Text style={[styles.emptySubtext, { color: NeutralColors.gray400 }]}>
-                                    {selectedBrandId ? 'Thử chọn thương hiệu khác hoặc tìm kiếm với từ khóa khác' : 'Vui lòng chọn thương hiệu để xem cửa hàng'}
+                                    {selectedBrandId ? 'Try selecting a different brand or search with a different keyword' : 'Please select a brand to view stores'}
                                 </Text>
                             </View>
                         )}

@@ -14,7 +14,7 @@ import { LogoutIcon, SettingsIcon } from '@/components/icons';
 import { ThemedView } from '@/components/themed-view';
 import { TicketComponent } from '@/components/ticket-component';
 import FEATURE_FLAGS from '@/constants/flag';
-import { BorderRadius, BrandColors, NeutralColors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, BrandColors, Colors, NeutralColors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAbility } from '@/contexts/ability-context';
 import { useAuth } from '@/contexts/auth-context';
 import { useAuthStore } from '@/stores/auth-store';
@@ -197,6 +197,7 @@ export default function HomeScreen({ showHeader = false }: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.light.background,
   },
 
   // Header styles

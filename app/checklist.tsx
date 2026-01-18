@@ -228,7 +228,7 @@ export default function Checklist() {
                 <Gap size={Spacing.md} />
                 {/* General notes */}
                 <View>
-                    <Collapsible title="Ghi chú chung">
+                    <Collapsible defaultOpen={true} title="Ghi chú chung">
                         <TextInput
                             style={[
                                 styles.textArea,
@@ -277,7 +277,7 @@ export default function Checklist() {
                         <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
                         <Text style={styles.submitButtonText}>
-                            Gửi báo cáo
+                            {submitMutation.isPending ? 'Đang gửi...' : 'Hoàn thành'}
                         </Text>
                     )}
                 </Pressable>
