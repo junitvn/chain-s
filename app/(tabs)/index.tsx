@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { LogoutIcon, SettingsIcon } from '@/components/icons';
+import SelectStoreComponent from '@/components/select-store-component';
 import { ThemedView } from '@/components/themed-view';
 import { TicketComponent } from '@/components/ticket-component';
 import FEATURE_FLAGS from '@/constants/flag';
@@ -18,7 +19,6 @@ import { BorderRadius, BrandColors, Colors, NeutralColors, Shadows, Spacing, Typ
 import { useAbility } from '@/contexts/ability-context';
 import { useAuth } from '@/contexts/auth-context';
 import { useAuthStore } from '@/stores/auth-store';
-import SelectStoreComponent from '../select-store/select-store';
 
 const HEADER_HEIGHT = 250;
 

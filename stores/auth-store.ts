@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>()(
       getEffectiveUser: () => {
         const state = get();
         if (!state.session?.user) return null;
-        
+
         // If test role override is set, return user with overridden role
         if (state.testRoleOverride) {
           return {
@@ -45,14 +45,13 @@ export const useAuthStore = create<AuthState>()(
             role: state.testRoleOverride,
           };
         }
-        
+
         return state.session.user;
       },
     }),
     {
-      name: 'auth-storage',
+      name: 'local-storage',
       storage: createJSONStorage(() => secureStorage),
-      // Only persist token and session, not isLoading or testRoleOverride
       partialize: (state) => ({
         token: state.token,
         session: state.session,

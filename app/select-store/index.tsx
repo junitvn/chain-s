@@ -1,7 +1,7 @@
 import { CustomHeader } from "@/components/custom-header";
+import SelectStoreComponent from "@/components/select-store-component";
 import React from "react";
 import { View } from "react-native";
-import SelectStoreComponent from "./select-store";
 
 export default function SelectStore() {
     return (
